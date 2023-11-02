@@ -1,5 +1,6 @@
 package com.example.mysqlConnectTetst.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,7 @@ public class Book {
     @JsonManagedReference
     private Author author;
 
-    @JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Lend> lend;
 }
