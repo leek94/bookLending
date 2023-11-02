@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,4 +22,8 @@ public class Book {
     @JoinColumn(name = "author_id")
     @JsonManagedReference
     private Author author;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Lend> lend;
 }
