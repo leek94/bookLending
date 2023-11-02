@@ -1,8 +1,10 @@
 package com.example.mysqlConnectTetst.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,4 +20,8 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Lend> lends;
 }

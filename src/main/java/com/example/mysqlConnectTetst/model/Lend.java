@@ -18,6 +18,7 @@ public class Lend {
     private Long id;
     private Instant startOn;
     private Instant dueOn;
+
     @Enumerated(EnumType.ORDINAL)
     private LendStatus status;
 
@@ -25,6 +26,11 @@ public class Lend {
     @JoinColumn(name = "book_id") //FK
     @JsonManagedReference //양방향 참조에서 무한 참조 막기 위한 애노테이션
     private Book book;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    @JsonManagedReference
+    private Member member;
 
 
 }
