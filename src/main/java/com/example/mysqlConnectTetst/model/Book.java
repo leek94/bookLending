@@ -1,5 +1,6 @@
 package com.example.mysqlConnectTetst.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,4 +16,9 @@ public class Book {
     private Long id;
     private String name;
     private String isbn;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    @JsonManagedReference
+    private Author author;
 }

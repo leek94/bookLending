@@ -1,9 +1,11 @@
 package com.example.mysqlConnectTetst.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,4 +18,7 @@ public class Author {
     private String firstName;
     private String lastName;
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Book> books;
 }
