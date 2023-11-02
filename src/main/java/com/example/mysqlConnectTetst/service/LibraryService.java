@@ -61,6 +61,10 @@ public class LibraryService {
         return bookRepository.save(bookToCreate);
     }
 
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
+    }
+
     public Member createMember(MemberCreationRequest request){
         Member member = new Member();
         BeanUtils.copyProperties(request, member);
