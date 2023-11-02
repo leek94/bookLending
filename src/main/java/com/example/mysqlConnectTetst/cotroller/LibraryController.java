@@ -19,7 +19,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LibraryController {
     private final LibraryService libraryService;
+    // TODO : ResponseEntity 사용법 공부
 
+    @GetMapping("/book")
+    public ResponseEntity readBooks(@RequestParam(required = false)String isbn) {
+        if (isbn == null){
+            return ResponseEntity.ok(libraryService.readBooks());
+        }
+        return ResponseEntity.ok(libraryService.readBook(isbn));
+    }
     @GetMapping("/book/{bookId}")
     public ResponseEntity<Book> readBook(@PathVariable Long bookId) {
         return ResponseEntity.ok(libraryService.readBook(bookId));
