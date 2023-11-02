@@ -5,6 +5,10 @@ import com.example.mysqlConnectTetst.repository.AuthorRepository;
 import com.example.mysqlConnectTetst.repository.BookRepository;
 import com.example.mysqlConnectTetst.repository.LendRepository;
 import com.example.mysqlConnectTetst.repository.MemberRepository;
+import com.example.mysqlConnectTetst.request.AuthorCreationRequest;
+import com.example.mysqlConnectTetst.request.BookCreationRequest;
+import com.example.mysqlConnectTetst.request.BookLendRequest;
+import com.example.mysqlConnectTetst.request.MemberCreationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -81,26 +85,27 @@ public class LibraryService {
         return authorRepository.save(author);
     }
 
-    public List<String> lendABook (List<BookLendRequest> list) {
+    public List<String> lendABook (BookLendRequest request) {
+
+        Optional<Member> memberForId = memberRepository.findById(request.getMemberId());
+        if (!memberForId.isPresent()) {
+            throw new EntityNotFoundException("Member not present in the database");
+        }
+
+        Member member = memberForId.get();
+        if (member.getStatus() != MemberStatus.ACTIVE){
+            throw new RuntimeException("User is not active to proceed a lendging");
+        }
         List<String> booksApprovedToBurrow = new ArrayList<>();
-        list.forEach(bookLendRequest -> {
-            Optional<Book> bookForId = bookRepository.findById(bookLendRequest.getBookId());
+        request.getBookIds().forEach(bookId -> {
+
+            Optional<Book> bookForId = bookRepository.findById(bookId);
             if (!bookForId.isPresent()){
                 throw new EntityNotFoundException("Can't find any book under given ID");
             }
 
-            Optional<Member> memberForId = memberRepository.findById(bookLendRequest.getMemberId());
-            if(!memberForId.isPresent()) {
-                throw new EntityNotFoundException("Member not present in the database");
-            }
-
-            Member member = memberForId.get();
-            if (member.getStatus() != MemberStatus.ACTIVE){
-                throw new RuntimeException("User is not active to proceed a lending.");
-            }
-            Optional<Lend> burrowedBook = lendRepository.findByBookAndStatus(bookForId.get(), LendStatus.BURROWED);
-
-            if (!burrowedBook.isPresent()) {
+            Optional<Member> burrowedBook = memberRepository.findById(bookId);
+            if(!burrowedBook.isPresent()) {
                 booksApprovedToBurrow.add(bookForId.get().getName());
                 Lend lend = new Lend();
                 lend.setMember(memberForId.get());
@@ -114,6 +119,28 @@ public class LibraryService {
         return booksApprovedToBurrow;
     }
 
+    public List<Author> readAuthors() {
+        return authorRepository.findAll();
+    }
 
+    public Book updatebook(Long bookId, BookCreationRequest request) {
+        Optional<Author> author = authorRepository.findById(request.getAuthorId());
+        if(!author.isPresent()) {
+            throw new EntityNotFoundException("Author Not Found");
+        }
+        Optional<Book> optionalBook = bookRepository.findById(bookId);
+        if (!optionalBook.isPresent()) {
+            throw new EntityNotFoundException("Book Not Found");
+        }
+        Book book = optionalBook.get();
+        book.setIsbn(request.getIsbn());
+        book.setName(request.getName());
+        book.setAuthor(author.get());
+        return bookRepository.save(book);
+    }
+
+    public List<Member> readMembers() {
+        return memberRepository.findAll();
+    }
 
 }
